@@ -29,8 +29,9 @@ export function LoginPage() {
       const user = await login(email, password);
       setAuthenticatedUser(user);
       setShowSuccess(true);
-    } catch (error) {
-      toast.error("Invalid credentials. Try one of the demo accounts.");
+    } catch (error: any) {
+      const errorMessage = error.message || "Invalid email or password";
+      toast.error(errorMessage);
       setIsLoading(false);
     }
   };
@@ -88,16 +89,18 @@ export function LoginPage() {
               ))}
             </div>
 
-            {/* Demo Accounts */}
+            {/* Getting Started */}
             <div className="mt-8 p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl">
-              <p className="text-gray-400 text-xs font-semibold mb-2">Demo Accounts:</p>
-              <div className="space-y-1 text-xs text-gray-500">
-                <p>• manager@transcope.com</p>
-                <p>• dispatch@transcope.com</p>
-                <p>• safety@transcope.com</p>
-                <p>• finance@transcope.com</p>
-                <p className="text-gray-600 mt-1">Password: any</p>
-              </div>
+              <p className="text-gray-400 text-xs font-semibold mb-2">New to Transcope?</p>
+              <p className="text-gray-500 text-xs mb-2">
+                Create an account to start managing your fleet efficiently.
+              </p>
+              <Link
+                to="/signup"
+                className="text-[#3B82F6] hover:text-[#60A5FA] text-sm font-medium transition-colors"
+              >
+                Sign up now →
+              </Link>
             </div>
           </div>
         </div>

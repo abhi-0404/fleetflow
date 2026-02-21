@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const db = require('../config/db');
+const db = require('../config/inMemoryDb');
 
 // Verify JWT token
 exports.protect = async (req, res, next) => {
