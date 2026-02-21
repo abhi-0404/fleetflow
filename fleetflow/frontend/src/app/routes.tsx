@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from "react-router";
+import { LandingPage } from "./pages/LandingPage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignUpPage } from "./pages/SignUpPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -17,6 +18,10 @@ import { RoleGuard } from "./components/RoleGuard";
 export const router = createBrowserRouter([
   {
     path: "/",
+    element: <LandingPage />,
+  },
+  {
+    path: "/login",
     element: <LoginPage />,
   },
   {
@@ -24,7 +29,7 @@ export const router = createBrowserRouter([
     element: <SignUpPage />,
   },
   {
-    path: "/",
+    path: "/dashboard",
     element: (
       <ProtectedRoute>
         <Layout />

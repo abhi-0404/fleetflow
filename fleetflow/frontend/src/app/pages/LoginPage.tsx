@@ -87,18 +87,6 @@ export function LoginPage() {
                 </div>
               ))}
             </div>
-
-            {/* Demo Accounts */}
-            <div className="mt-8 p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl">
-              <p className="text-gray-400 text-xs font-semibold mb-2">Demo Accounts:</p>
-              <div className="space-y-1 text-xs text-gray-500">
-                <p>• manager@transcope.com</p>
-                <p>• dispatch@transcope.com</p>
-                <p>• safety@transcope.com</p>
-                <p>• finance@transcope.com</p>
-                <p className="text-gray-600 mt-1">Password: any</p>
-              </div>
-            </div>
           </div>
         </div>
 
