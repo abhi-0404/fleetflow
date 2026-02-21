@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
-const db = require('../config/db');
+const db = require('../config/inMemoryDb');
 const { sendTokenResponse } = require('../utils/tokenUtils');
 
 // @desc    Register user
@@ -9,7 +9,7 @@ const { sendTokenResponse } = require('../utils/tokenUtils');
 exports.signup = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
+    return res.status(400).json({ success: false, message: 'Invalid input', errors: errors.array() });
   }
 
   const { name, email, password, role } = req.body;
@@ -18,7 +18,7 @@ exports.signup = async (req, res) => {
     // Check if user exists
     const existingUser = db.users.findByEmail(email);
     if (existingUser) {
-      return res.status(400).json({ success: false, message: 'User already exists' });
+      return res.status(400).json({ success: false, message: 'User already exists with this email' });
     }
 
     // Validate role
@@ -41,6 +41,7 @@ exports.signup = async (req, res) => {
 
     sendTokenResponse(user, 201, res);
   } catch (error) {
+    console.error('Signup error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
@@ -51,7 +52,7 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array() });
+    return res.status(400).json({ success: false, message: 'Invalid input', errors: errors.array() });
   }
 
   const { email, password } = req.body;
@@ -60,17 +61,18 @@ exports.login = async (req, res) => {
     // Check if user exists
     const user = db.users.findByEmail(email);
     if (!user) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     // Verify password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     sendTokenResponse(user, 200, res);
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };

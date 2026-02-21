@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { authService } from "../../services/authService";
 
 export type UserRole = "MANAGER" | "DISPATCHER" | "SAFETY_OFFICER" | "FINANCIAL_ANALYST";
 
@@ -12,34 +13,11 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<User>;
+  signup: (name: string, email: string, password: string, role: UserRole) => Promise<User>;
   logout: () => void;
   isAuthenticated: boolean;
   hasRole: (allowedRoles: UserRole[]) => boolean;
 }
-
-// Mock user database
-const MOCK_USERS: Record<string, Omit<User, "id">> = {
-  "manager@transcope.com": {
-    name: "Alex Morgan",
-    email: "manager@transcope.com",
-    role: "MANAGER",
-  },
-  "dispatch@transcope.com": {
-    name: "Jordan Smith",
-    email: "dispatch@transcope.com",
-    role: "DISPATCHER",
-  },
-  "safety@transcope.com": {
-    name: "Sam Rivera",
-    email: "safety@transcope.com",
-    role: "SAFETY_OFFICER",
-  },
-  "finance@transcope.com": {
-    name: "Taylor Chen",
-    email: "finance@transcope.com",
-    role: "FINANCIAL_ANALYST",
-  },
-};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -58,26 +36,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       localStorage.removeItem("transcope_user");
       localStorage.removeItem("transcope_role");
+      localStorage.removeItem("transcope_token");
     }
   }, [user]);
 
   const login = async (email: string, password: string): Promise<User> => {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      const response = await authService.login({ email, password });
+      
+      const authenticatedUser: User = {
+        id: response.user.id,
+        name: response.user.name,
+        email: response.user.email,
+        role: response.user.role as UserRole,
+      };
 
-    const mockUserData = MOCK_USERS[email.toLowerCase()];
-    
-    if (!mockUserData) {
-      throw new Error("Invalid credentials");
+      // Store token
+      localStorage.setItem("transcope_token", response.token);
+      
+      setUser(authenticatedUser);
+      return authenticatedUser;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Invalid credentials");
     }
+  };
 
-    const authenticatedUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      ...mockUserData,
-    };
+  const signup = async (name: string, email: string, password: string, role: UserRole): Promise<User> => {
+    try {
+      const response = await authService.signup({ name, email, password, role });
+      
+      const newUser: User = {
+        id: response.user.id,
+        name: response.user.name,
+        email: response.user.email,
+        role: response.user.role as UserRole,
+      };
 
-    setUser(authenticatedUser);
-    return authenticatedUser;
+      // Store token
+      localStorage.setItem("transcope_token", response.token);
+      
+      setUser(newUser);
+      return newUser;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || "Signup failed");
+    }
   };
 
   const logout = () => {
@@ -92,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated, hasRole }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, isAuthenticated, hasRole }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { UserRole } from "../context/AuthContext";
+import { UserRole, useAuth } from "../context/AuthContext";
 import { RoleSelector } from "../components/RoleSelector";
 import { Truck, Mail, Lock, User, Building } from "lucide-react";
 import { motion } from "motion/react";
@@ -16,6 +16,7 @@ export function SignUpPage() {
   });
   const [role, setRole] = useState<UserRole>("MANAGER");
   const [isLoading, setIsLoading] = useState(false);
+  const { signup } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (field: string, value: string) => {
@@ -48,11 +49,25 @@ export function SignUpPage() {
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("Account created successfully! Please sign in.");
-      navigate("/");
-    }, 1500);
+    try {
+      await signup(formData.name, formData.email, formData.password, role);
+      toast.success("Account created successfully!");
+      
+      // Redirect based on role
+      const roleRoutes: Record<UserRole, string> = {
+        MANAGER: "/dashboard",
+        DISPATCHER: "/trips",
+        SAFETY_OFFICER: "/drivers",
+        FINANCIAL_ANALYST: "/analytics",
+      };
+      
+      setTimeout(() => {
+        navigate(roleRoutes[role]);
+      }, 1000);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to create account");
+      setIsLoading(false);
+    }
   };
 
   return (

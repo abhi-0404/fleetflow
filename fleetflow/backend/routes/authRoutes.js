@@ -25,4 +25,9 @@ router.post('/login', loginValidation, login);
 router.get('/me', protect, getMe);
 router.post('/forgot-password', forgotPassword);
 
+// Test endpoint
+router.get('/test', (req, res) => {
+  res.json({ success: true, message: 'Auth routes working!' });
+});
+
 module.exports = router;
