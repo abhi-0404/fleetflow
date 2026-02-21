@@ -24,7 +24,7 @@ export function RoleSelector({ value, onChange, label = "Preview as" }: RoleSele
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3.5 bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl text-white text-sm hover:border-[#3B82F6] hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all"
+        className="w-full flex items-center justify-between px-4 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-lg text-white text-sm hover:border-[#3B82F6] hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all"
       >
         <span className="text-gray-400">
           {label}: <span className="text-white font-medium">{displayValue}</span>
@@ -35,7 +35,7 @@ export function RoleSelector({ value, onChange, label = "Preview as" }: RoleSele
         />
       </button>
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-[#1E293B]/95 backdrop-blur-2xl border border-white/20 rounded-xl overflow-hidden z-10 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-[#1E293B]/95 backdrop-blur-2xl border border-white/20 rounded-lg overflow-hidden z-50 shadow-[0_20px_60px_rgba(0,0,0,0.5)]">
           {roles.map((role) => (
             <button
               key={role.value}
